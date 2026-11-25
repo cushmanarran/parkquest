@@ -1,0 +1,103 @@
+/* =========================================================
+PARKQUEST CUSTOM STYLES
+========================================================= */
+
+/* Subtle topographic dot pattern on parchment background */
+body {
+background-image: radial-gradient(#d8cfbe 0.75px, transparent 0.75px);
+background-size: 20px 20px;
+}
+
+/* Custom embroidered patch border effect */
+.patch-stitch {
+box-shadow:
+inset 0 0 0 3px rgba(255, 255, 255, 0.28),
+inset 0 0 0 6px rgba(27, 67, 50, 0.45),
+0 8px 18px -4px rgba(0, 0, 0, 0.25);
+}
+
+/* Smooth fade-in animation for modals */
+@keyframes fadeInScale {
+from {
+opacity: 0;
+transform: scale(0.96) translateY(6px);
+}
+to {
+opacity: 1;
+transform: scale(1) translateY(0);
+}
+}
+
+.animate-fade-in {
+animation: fadeInScale 0.2s ease-out forwards;
+}
+
+/* Clean custom scrollbars for legal & quest modals */
+::-webkit-scrollbar {
+width: 7px;
+height: 7px;
+}
+
+::-webkit-scrollbar-track {
+background: #f1ece1;
+border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+background: #c5bba7;
+border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+background: #2d6a4f;
+}
+
+/* Radar & GPS Scanner Animations */
+@keyframes radarPing {
+  0% { transform: scale(0.85); opacity: 0.9; }
+  50% { transform: scale(1.2); opacity: 0.25; }
+  100% { transform: scale(0.85); opacity: 0.9; }
+}
+
+.animate-radar-ping {
+  animation: radarPing 2.2s infinite ease-in-out;
+}
+
+@keyframes radarSweepRing {
+  0% { transform: scale(0.7); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.animate-radar-sweep {
+  animation: radarSweepRing 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+@keyframes pulseGlowEmerald {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(45, 106, 79, 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(45, 106, 79, 0); }
+}
+
+.pulse-glow-emerald {
+  animation: pulseGlowEmerald 2s infinite;
+}
+
+/* Interactive 64-Park Map Pin Styles */
+.map-park-pin {
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.2s ease;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.map-park-pin:hover {
+  transform: scale(1.32);
+}
+
+@keyframes mapPinPulse {
+  0%, 100% { r: 10; opacity: 0.75; }
+  50% { r: 16; opacity: 0.15; }
+}
+
+.map-pin-selected-ring {
+  animation: mapPinPulse 1.8s ease-in-out infinite;
+}

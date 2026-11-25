@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: True if the signed-in user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Helper: True if the target document belongs to the signed-in user
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Helper: True if the signed-in user is listed in the target user's friends array
+    // or if the target user is in the signed-in user's friends array
+    function isFriendOf(userId) {
+      return isSignedIn() && (
+        request.auth.uid in resource.data.friends ||
+        userId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.friends
+      );
+    }
+
+    match /users/{userId} {
+      // Allow authenticated users to:
+      // 1. Read their own profile
+      // 2. Read profiles of users in their friends list
+      // 3. Query users by friendCode (limit 1 lookup when adding a friend)
+      allow get: if isOwner(userId) || isFriendOf(userId);
+      allow list: if isSignedIn() && (
+        request.query.limit <= 30 ||
+        isOwner(userId) ||
+        isFriendOf(userId)
+      );
+
+      // Strictly restrict write permissions so a user can ONLY create, update,
+      // or delete their own uid document.
+      allow create: if isOwner(userId)
+        && request.resource.data.uid == request.auth.uid;
+      allow update: if isOwner(userId)
+        && request.resource.data.uid == resource.data.uid;
+      allow delete: if isOwner(userId);
+    }
+
+    match /friendRequests/{requestId} {
+      // Split get vs list: resource == null is only valid on get, not list queries
+      allow get: if isSignedIn() && (
+        resource == null ||
+        resource.data.fromUid == request.auth.uid ||
+        resource.data.toUid == request.auth.uid
+      );
+      allow list: if isSignedIn() && (
+        resource.data.fromUid == request.auth.uid ||
+        resource.data.toUid == request.auth.uid
+      );
+      allow create: if isSignedIn()
+        && request.resource.data.fromUid == request.auth.uid;
+      allow update, delete: if isSignedIn() && (
+        resource.data.fromUid == request.auth.uid ||
+        resource.data.toUid == request.auth.uid
+      );
+    }
+  }
+}
